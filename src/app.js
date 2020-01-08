@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
   console.log('up')
 
   
-  res.send('ok')
+  res.send({request: 'ok'})
   // res.send(req.user) for auth middleware
 })
 
