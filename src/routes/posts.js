@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.get('/', async (req, res) => {
   try {
-    const posts = await Post.find({})
+    const posts = await Post.find({published:true})
     console.log(posts[0].owner)
 
 
