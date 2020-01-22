@@ -224,7 +224,7 @@ router.post('/image/:id', adminOnly, auth, postExist, upload2.single('image'), a
 
     req.post.pics = req.post.pics.concat({ image: req.file.id })
     await req.post.save()
-    res.send('Ok')
+    res.send(req.post)
 
   } catch (error) {
     res.send('Unable to store')
