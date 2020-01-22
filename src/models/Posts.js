@@ -22,7 +22,28 @@ const postSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-  }
+  },
+
+  images: [
+    {
+      buffer: {
+        type: Buffer
+      },
+      contentType: String,
+      post: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post',
+        required: true
+      }
+    }
+  ],
+
+  pics: [
+    {image: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
+    }}
+  ]
 
 })
 

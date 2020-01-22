@@ -1,6 +1,8 @@
 const express = require('express')
 const userRouter = require('./routes/user')
 const postRouter = require('./routes/posts')
+const Post = require('./models/Posts')
+
 const cors = require('cors')
 
 const app = express()
@@ -14,12 +16,22 @@ app.use(express.json());
 app.use('/users', userRouter)
 app.use('/posts', postRouter)
 
-
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   console.log('up')
 
-  
-  res.send({request: 'ok'})
+  try {
+    const post = await Post.findById('5e21eed36f8f7800171ae993')
+
+    if (post === null) {
+      throw new Error('No post')
+    }
+    console.log(post)
+    return res.send(post.images[0].buffer)
+  } catch (error) {
+    console.log(error)
+    res.send({error})
+  }
+  // res.send({request: 'ok'})
   // res.send(req.user) for auth middleware
 })
 

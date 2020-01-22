@@ -79,6 +79,12 @@ router.post('/logoutall', auth, async (req, res) => {
 })
 
 
+router.get('/me', auth, async (req, res) => {
+  const user = await User.findOne({_id: req.user._id})
+
+  console.log(user)
+})
+
 
 
 module.exports = router
