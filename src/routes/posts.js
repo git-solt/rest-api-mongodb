@@ -206,7 +206,26 @@ router.post('/:id', auth, upload.single('image'), async (req, res) => {
 })
 
 
+router.delete('/:id/deleteimage/:imageid', postExist, adminOnly, auth, async (req, res) => {
+  const id = new ObjectId(req.params.imageid)
 
+
+  
+  try {
+
+    await gfs.remove({ _id: id, root: 'uploads' })
+    // // const removed = await gfs.files.findOne({_id: id})
+    // req.post
+    // return res.send('ok')
+    req.post.pics = req.post.pics.filter(cur => cur.image.toString() !== id.toString())
+    
+    const post = await req.post.save()
+    return res.send(post)
+  } catch (error) {
+    return res.status(404).send('Not removed')
+  }
+
+})
 
 router.post('/image/:id', adminOnly, auth, postExist, upload2.single('image'), async (req, res) => {
 
@@ -216,7 +235,7 @@ router.post('/image/:id', adminOnly, auth, postExist, upload2.single('image'), a
 
   try {
     const file = await gfs.files.findOne({ _id: id })
-    
+
     if (!file) {
       return res.status(500).send('No file stored')
 
