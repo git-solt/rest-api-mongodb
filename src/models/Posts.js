@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const {gfs} = require('../routes/posts')
 
 const postSchema = new mongoose.Schema({
   title: {

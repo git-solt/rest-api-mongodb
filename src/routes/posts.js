@@ -75,7 +75,48 @@ const upload2 = multer({ storage });
 
 
 
+router.delete('/:id/deleteimage/:imageid', postExist, adminOnly, auth, async (req, res) => {
+  const id = new ObjectId(req.params.imageid)
 
+
+
+  try {
+
+    await gfs.remove({ _id: id, root: 'uploads' })
+    // // const removed = await gfs.files.findOne({_id: id})
+    // req.post
+    // return res.send('ok')
+    req.post.pics = req.post.pics.filter(cur => cur.image.toString() !== id.toString())
+
+    const post = await req.post.save()
+    return res.send(post)
+  } catch (error) {
+    return res.status(404).send('Not removed')
+  }
+
+})
+
+router.delete('/:id', postExist, adminOnly, auth, async (req, res) => {
+  if (!req.post.published && req.user._id.toString() !== req.post.owner.toString()) {
+    throw new Error('Only the creator of a draft can delete it')
+  }
+
+  try {
+    await req.post.remove()
+    req.post.pics.forEach(cur => {
+      const id = new ObjectId(cur.image)
+      gfs.remove({ _id: id, root: 'uploads' })
+        .then(() => console.log('ok'))
+        .catch(e => console.log(e))
+    })
+
+    return res.send({ removed: req.post })
+  } catch (error) {
+    res.status(500).send('cannot remove')
+  }
+
+
+})
 
 router.get('/:id', async (req, res) => {
   try {
@@ -206,26 +247,7 @@ router.post('/:id', auth, upload.single('image'), async (req, res) => {
 })
 
 
-router.delete('/:id/deleteimage/:imageid', postExist, adminOnly, auth, async (req, res) => {
-  const id = new ObjectId(req.params.imageid)
 
-
-  
-  try {
-
-    await gfs.remove({ _id: id, root: 'uploads' })
-    // // const removed = await gfs.files.findOne({_id: id})
-    // req.post
-    // return res.send('ok')
-    req.post.pics = req.post.pics.filter(cur => cur.image.toString() !== id.toString())
-    
-    const post = await req.post.save()
-    return res.send(post)
-  } catch (error) {
-    return res.status(404).send('Not removed')
-  }
-
-})
 
 router.post('/image/:id', adminOnly, auth, postExist, upload2.single('image'), async (req, res) => {
 
