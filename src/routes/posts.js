@@ -118,7 +118,7 @@ router.delete('/:id', postExist, adminOnly, auth, async (req, res) => {
 
 })
 
-router.get('/:id', async (req, res) => {
+router.get('/post/:id', async (req, res) => {
   try {
     const post = await Post.findOne({ _id: req.params.id, published: true })
     if (!post) {
