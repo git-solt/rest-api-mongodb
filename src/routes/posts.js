@@ -6,7 +6,7 @@ const auth = require('../middleware/auth')
 const adminOnly = require('../middleware/adminOnly')
 const router = express.Router()
 const postExist = require('../middleware/postExist')
-
+const isPublishedOrOwner = require('../middleware/isPublishedOrOwner')
 
 
 //File upload config
@@ -249,7 +249,7 @@ router.post('/:id', auth, upload.single('image'), async (req, res) => {
 
 
 
-router.post('/image/:id', adminOnly, auth, postExist, upload2.single('image'), async (req, res) => {
+router.post('/image/:id', adminOnly, auth, postExist, isPublishedOrOwner, upload2.single('image'), async (req, res) => {
 
 
 
