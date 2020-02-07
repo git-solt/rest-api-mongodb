@@ -11,13 +11,13 @@ router.post('/register', async (req, res) => {
 
     await user.save()
 
-    res.send(user)
+    return res.send(user)
 
 
     
   } catch (error) {
     
-    res.status(400).send()
+    res.status(500).send({error})
     
 
   }
