@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     validate(value) {
       if (!validator.isEmail(value)) {
         throw new Error('Please provide a valid email')
-      } 
+      }
     }
   },
   password: {
@@ -24,13 +24,19 @@ const userSchema = new mongoose.Schema({
     trim: true,
     minlength: 6,
     validate(value) {
-      const noGo = value.toLowerCase().includes('password'.toLowerCase())
+      const incPassword = value.toLowerCase().includes('password'.toLowerCase())
 
-      if (noGo) {
+      if (incPassword) {
         throw new Error('Cannot include the word password')
       }
+
+      const pass = value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,20}$/)
+
+      if (!pass) {
+        throw new Error('Passwords needs to be minimum 6 characters long and include atleast one number and an Uppercase character')
+      }
     }
-  }, 
+  },
   isAdmin: {
     type: Boolean,
     required: true,
@@ -46,11 +52,11 @@ const userSchema = new mongoose.Schema({
   ]
 })
 
-userSchema.methods.generateAuthToken = async function ()  {
+userSchema.methods.generateAuthToken = async function () {
   const user = this
-  const token = jwt.sign({_id: user._id.toString()}, process.env.JWT_SECRET, {expiresIn: '7d'})
-  
-  user.tokens = user.tokens.concat({token})
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '7d' })
+
+  user.tokens = user.tokens.concat({ token })
 
   await user.save()
 
@@ -69,7 +75,7 @@ userSchema.methods.toJSON = function () {
 }
 
 userSchema.statics.findByCredentials = async function (email, password) {
-  const user = await User.findOne({email})
+  const user = await User.findOne({ email })
 
   if (!user) {
     throw new Error('Unable to log in')
@@ -79,7 +85,7 @@ userSchema.statics.findByCredentials = async function (email, password) {
 
   if (!isMatch) {
     throw new Error('Unable to log in')
-    
+
   }
 
   return user
