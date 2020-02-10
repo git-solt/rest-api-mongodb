@@ -275,6 +275,47 @@ router.post('/image/:id', adminOnly, auth, postExist, isPublishedOrOwner, upload
 
 })
 
+router.patch('/layout/:id/:imageid', adminOnly, auth, postExist, async (req, res) => {
+  const enums = ['fill', 'cover', 'contain', 'scaledown']
+
+
+
+  if (!req.body.layout) {
+    throw new Error('No layout found')
+  }
+
+  const pass = enums.some(cur => cur === req.body.layout)
+
+
+  if (!pass) {
+    return res.status(500).send('Not a valid layout')
+  }
+
+  req.post.pics = req.post.pics.map((cur) => {
+    if (cur.image.toString() === req.params.imageid.toString()) {
+
+      return {
+        _id: cur._id,
+        image: cur.image,
+        layout: req.body.layout
+      }
+    } else {
+      return cur
+    }
+  })
+
+
+
+
+
+  try {
+    await req.post.save()
+    res.send(req.post)
+  } catch (e) {
+    res.status(500).send(e)
+  }
+})
+
 
 router.get('/image/:id', (req, res) => {
 

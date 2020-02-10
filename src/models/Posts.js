@@ -42,6 +42,10 @@ const postSchema = new mongoose.Schema({
     {image: {
       type: mongoose.Schema.Types.ObjectId,
       required: true
+    }, layout: {
+      type: String,
+      default: 'fill',
+      required: true
     }}
   ]
 
