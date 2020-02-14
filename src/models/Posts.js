@@ -16,7 +16,13 @@ const postSchema = new mongoose.Schema({
     type: Boolean,
     default: true, 
     required: true
-  }, 
+  },
+
+  createdAt: {
+    type: Date,
+    default: Date,
+    required: true
+  },
 
   owner: {
     type: mongoose.Schema.Types.ObjectId,
