@@ -124,6 +124,8 @@ router.get('/post/:id', async (req, res) => {
     if (!post) {
       return res.status(404).send('No post')
     }
+    await post.populate('pics.descriptions')
+        .execPopulate()
     return res.send(post)
   } catch (error) {
     return res.status(500).send({ error })

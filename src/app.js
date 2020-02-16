@@ -1,6 +1,7 @@
 const express = require('express')
 const userRouter = require('./routes/user')
 const postRouter = require('./routes/posts')
+const descriptionRouter = require('./routes/descriptions')
 const Post = require('./models/Posts')
 
 const cors = require('cors')
@@ -15,6 +16,7 @@ app.use(express.json());
 
 app.use('/users', userRouter)
 app.use('/posts', postRouter)
+app.use(descriptionRouter)
 
 app.get('/', async (req, res) => {
   console.log('up')

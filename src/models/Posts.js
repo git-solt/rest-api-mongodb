@@ -52,7 +52,13 @@ const postSchema = new mongoose.Schema({
       type: String,
       default: 'fill',
       required: true
-    }}
+    }, descriptions: [
+        {
+          type: mongoose.Schema.Types.ObjectID,
+          ref: 'Description'
+        }
+      ]
+    }
   ]
 
 })
