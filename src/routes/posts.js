@@ -299,7 +299,8 @@ router.patch('/layout/:id/:imageid', adminOnly, auth, postExist, async (req, res
       return {
         _id: cur._id,
         image: cur.image,
-        layout: req.body.layout
+        layout: req.body.layout,
+        descriptions:cur.descriptions
       }
     } else {
       return cur
