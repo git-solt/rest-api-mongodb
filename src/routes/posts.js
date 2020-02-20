@@ -7,7 +7,7 @@ const adminOnly = require('../middleware/adminOnly')
 const router = express.Router()
 const postExist = require('../middleware/postExist')
 const isPublishedOrOwner = require('../middleware/isPublishedOrOwner')
-
+const Description = require('../models/Descriptions')
 
 //File upload config
 const multer = require('multer')
@@ -83,9 +83,7 @@ router.delete('/:id/deleteimage/:imageid', postExist, adminOnly, auth, async (re
   try {
 
     await gfs.remove({ _id: id, root: 'uploads' })
-    // // const removed = await gfs.files.findOne({_id: id})
-    // req.post
-    // return res.send('ok')
+    await Description.deleteMany({image: id})
     req.post.pics = req.post.pics.filter(cur => cur.image.toString() !== id.toString())
 
     const post = await req.post.save()
@@ -106,7 +104,11 @@ router.delete('/:id', postExist, adminOnly, auth, async (req, res) => {
     req.post.pics.forEach(cur => {
       const id = new ObjectId(cur.image)
       gfs.remove({ _id: id, root: 'uploads' })
-        .then(() => console.log('ok'))
+        .then(() => {
+          return Description.deleteMany({image: cur.image})
+
+        })
+          .then((res) => console.log(res))
         .catch(e => console.log(e))
     })
 
