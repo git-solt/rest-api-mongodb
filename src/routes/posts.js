@@ -83,7 +83,7 @@ router.delete('/:id/deleteimage/:imageid', postExist, adminOnly, auth, async (re
   try {
 
     await gfs.remove({ _id: id, root: 'uploads' })
-    await Description.deleteMany({image: id})
+    await Description.deleteMany({ image: id })
     req.post.pics = req.post.pics.filter(cur => cur.image.toString() !== id.toString())
 
     const post = await req.post.save()
@@ -105,10 +105,10 @@ router.delete('/:id', postExist, adminOnly, auth, async (req, res) => {
       const id = new ObjectId(cur.image)
       gfs.remove({ _id: id, root: 'uploads' })
         .then(() => {
-          return Description.deleteMany({image: cur.image})
+          return Description.deleteMany({ image: cur.image })
 
         })
-          .then((res) => console.log(res))
+        .then((res) => console.log(res))
         .catch(e => console.log(e))
     })
 
@@ -127,7 +127,7 @@ router.get('/post/:id', async (req, res) => {
       return res.status(404).send('No post')
     }
     await post.populate('pics.descriptions')
-        .execPopulate()
+      .execPopulate()
     return res.send(post)
   } catch (error) {
     return res.status(500).send({ error })
@@ -136,7 +136,25 @@ router.get('/post/:id', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
+
+    let { limit, skip } = req.query
+
+    if (limit || skip) {
+      limit = parseInt(limit)
+      skip = parseInt(skip)
+
+      const posts = await Post.find({ published: true })
+        .limit(limit)
+        .skip(skip)
+        .sort({ createdAt: 'desc' })
+
+      return posts ? res.send(posts) : res.send([])
+
+    }
+
     const posts = await Post.find({ published: true })
+      .sort({ createdAt: 'desc' })
+
 
     return posts ? res.send(posts) : res.send([])
   } catch (error) {
@@ -302,7 +320,7 @@ router.patch('/layout/:id/:imageid', adminOnly, auth, postExist, async (req, res
         _id: cur._id,
         image: cur.image,
         layout: req.body.layout,
-        descriptions:cur.descriptions
+        descriptions: cur.descriptions
       }
     } else {
       return cur
