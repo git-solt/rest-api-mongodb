@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
+const {comparePassword} = require('../utils/encryptions')
 
 const userSchema = new mongoose.Schema({
   userName: {
@@ -30,7 +31,7 @@ const userSchema = new mongoose.Schema({
         throw new Error('Cannot include the word password')
       }
 
-      const pass = value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,20}$/)
+      const pass = value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,60}$/)
 
       if (!pass) {
         throw new Error('Passwords needs to be minimum 6 characters long and include atleast one number and an Uppercase character')
@@ -81,10 +82,19 @@ userSchema.statics.findByCredentials = async function (email, password) {
     throw new Error('Unable to log in')
   }
 
+
+  //TODO Should remove this check eventually and enforce password update. Only there becayse older users have password as plain text
   const isMatch = password === user.password
 
   if (!isMatch) {
+
+    const hashMatch = await comparePassword(password, user.password)
+
+    if(!hashMatch) {
     throw new Error('Unable to log in')
+
+    }
+
 
   }
 

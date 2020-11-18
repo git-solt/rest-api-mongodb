@@ -2,14 +2,19 @@ const express = require('express')
 const User = require('../models/User')
 const router = express.Router()
 const auth = require('../middleware/auth')
-const adminOnly = require('../middleware/adminOnly')
 const validUpdateRequest = require('../utils/validateUpdateReq')
+const {hashPw, comparePassword} = require('../utils/encryptions')
 
 router.post('/register', async (req, res) => {
   const user = new User(req.body)
   try {
 
+    const decodedPassword = await hashPw(user.password)
+    user.password = decodedPassword
+
     await user.save()
+
+    console.log(user)
 
     return res.send(user)
 
@@ -44,7 +49,13 @@ router.patch('/me', auth, async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
+
+    // const encodePassword = await hashPw(req.body.password)
+
     const user = await User.findByCredentials(req.body.email, req.body.password)
+
+    
+
     const token = await user.generateAuthToken()
     res.send({user, token})
   } catch (error) {
